@@ -1,0 +1,52 @@
+<editors>
+	<editor id="I_NONE">
+		<range uom="0" min="0" max="999999"/>
+	</editor>
+	<editor id="ODDEVEN">
+		<range uom="25" subset="1,2" nls="EN-ODDEVEN"/>
+	</editor>
+	<editor id="SEASON">
+		<range uom="25" subset="0-3" nls="EN-SEASON"/>
+	</editor>
+	<editor id="I_STATE">
+		<range uom="25" subset="0,1" nls="EN-STATE" />
+	</editor>
+	<editor id="I_WEEKDAY">
+		<range uom="25" subset="0-6" nls="EN-WEEKDAY" />
+	</editor>
+	<editor id="I_HOUR">
+		<range uom="19" min="0" max="23" />
+	</editor>
+	<editor id="I_Y_HOUR">
+		<range uom="19" min="0" max="8784" />
+	</editor>
+	<editor id="I_E_DAY">
+		<range uom="10" min="0" max="99999" />
+	</editor>
+	<editor id="I_MINUTE">
+		<range uom="44" min="0" max="59" />
+	</editor>
+	<editor id="I_DOM">
+		<range uom="10" min="1" max="31" />
+	</editor>
+	<editor id="I_WOY">
+		<range uom="0" min="1" max="53" />
+	</editor>
+	<editor id="I_DOY">
+		<range uom="10" min="1" max="366" />
+	</editor>
+	<editor id="LOGLEVEL">
+		<range uom="25" subset="0,10,20,30,40,50" nls="EN-LOGLEVEL"/>
+	</editor>
+	<editor id="I_MONTH">
+		<range uom="25" subset="1-12" nls="EN-MONTH" />
+	</editor>
+	<editor id="I_TZ">
+		<range uom="20" min="-12" max="12" prec="1" step=".5" />
+	</editor>
+
+	<!-- Boolean -->
+	<editor id="bool">
+		<range uom="2" subset="0,1" />
+	</editor>
+</editors>

@@ -1,0 +1,2 @@
+pgc_interface>=1.0.0
+python-dateutil>=2.7.3

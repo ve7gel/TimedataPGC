@@ -1,0 +1,77 @@
+# controller
+ND-ISYCalendar-NAME = ISY Time Server
+ND-ISYCalendar-ICON = GenericCtl
+CMD-ctl-QUERY-NAME = Query
+CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
+CMD-ctl-REMOVE_NOTICES_ALL-NAME = Remove Notices
+CMD-ctl-LOG_LEVEL-NAME = Logging Level
+ST-ctl-ST-NAME = NodeServer Online
+ST-ctl-GV0-NAME = Hour
+ST-ctl-GV1-NAME = Minute
+ST-ctl-GV2-NAME = Day of Month
+ST-ctl-GV3-NAME = Month
+ST-ctl-GV4-NAME = Year
+ST-ctl-GV5-NAME = Day of Week
+ST-ctl-GV6-NAME = Week of Year
+ST-ctl-GV7-NAME = Day of Year
+ST-ctl-GV8-NAME = Odd or Even Day
+ST-ctl-GV9-NAME = Minutes YTD
+ST-ctl-GV10-NAME = Season
+ST-ctl-GV11-NAME = Leap Year
+ST-ctl-GV12-NAME = Time Zone (from UTC)
+ST-ctl-GV13-NAME = DST
+ST-ctl-GV14-NAME = Hours Year to Date
+ST-ctl-GV15-NAME = Days since Unix Epoch
+ST-ctl-GV16-NAME = Logging Level
+
+# Sunrise/sunset times
+ND-sundata-NAME = Sunrise/Sunset
+ND-sundata-ICON = Weather
+ST-SUN-ST-NAME = Sunrise Hour Today
+ST-SUN-GV0-NAME = Sunrise Minute Today
+ST-SUN-GV1-NAME = Sunset Hour Today
+ST-SUN-GV2-NAME = Sunset Minute Today
+ST-SUN-GV3-NAME = Sunrise Hour Tomorrow
+ST-SUN-GV4-NAME = Sunrise Minute Tomorrow
+ST-SUN-GV5-NAME = Sunset Hour Tomorrow
+ST-SUN-GV6-NAME = Sunset Minute Tomorrow
+CMD-SUN-QUERY-NAME = Query
+
+EN-ODDEVEN-0 = EVEN
+EN-ODDEVEN-1 = ODD
+
+EN-STATE-0 = OFF
+EN-STATE-1 = ON
+
+EN-WEEKDAY-0 = Monday
+EN-WEEKDAY-1 = Tuesday
+EN-WEEKDAY-2 = Wednesday
+EN-WEEKDAY-3 = Thursday
+EN-WEEKDAY-4 = Friday
+EN-WEEKDAY-5 = Saturday
+EN-WEEKDAY-6 = Sunday
+
+EN-LOGLEVEL-0 = None
+EN-LOGLEVEL-10 = Debug
+EN-LOGLEVEL-20 = Info
+EN-LOGLEVEL-30 = Error
+EN-LOGLEVEL-40 = Warning
+EN-LOGLEVEL-50 = Critical
+
+EN-MONTH-1 = January
+EN-MONTH-2 = February
+EN-MONTH-3 = March
+EN-MONTH-4 = April
+EN-MONTH-5 = May
+EN-MONTH-6 = June
+EN-MONTH-7 = July
+EN-MONTH-8 = August
+EN-MONTH-9 = September
+EN-MONTH-10 = October
+EN-MONTH-11 = November
+EN-MONTH-12 = December
+
+EN-SEASON-0 = Spring
+EN-SEASON-1 = Summer
+EN-SEASON-2 = Autumn
+EN-SEASON-3 = Winter

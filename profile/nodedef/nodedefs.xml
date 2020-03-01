@@ -1,0 +1,56 @@
+<nodeDefs>
+  <nodeDef id="ISYCalendar" nodeType="139" nls="ctl">
+    <sts>
+        <st id="ST" editor="bool" />
+        <st id="GV0" editor="I_HOUR" />
+        <st id="GV1" editor="I_MINUTE" />
+        <st id="GV2" editor="I_DOM" />
+        <st id="GV3" editor="I_MONTH" />
+        <st id="GV4" editor="I_NONE" />
+        <st id="GV5" editor="I_WEEKDAY" />
+        <st id="GV6" editor="I_WOY" />
+        <st id="GV7" editor="I_DOY" />
+        <st id="GV8" editor="ODDEVEN" />
+        <st id="GV9" editor="I_NONE" />
+        <st id="GV10" editor="SEASON" />
+        <st id="GV11" editor="bool" />
+        <st id="GV12" editor="I_TZ" />
+        <st id="GV13" editor="bool" />
+        <st id="GV14" editor="I_Y_HOUR" />
+        <st id="GV15" editor="I_E_DAY" />
+        <st id="GV16" editor="LOGLEVEL" />
+    </sts>
+    <cmds>
+        <sends>
+            <cmd id = "LOG_LEVEL"/>
+        </sends>
+        <accepts>
+            <cmd id="LOG_LEVEL" >
+                <p id= "" editor="LOGLEVEL" init="GV14" />
+            </cmd>
+            <cmd id="QUERY"/>
+            <cmd id="REMOVE_NOTICES_ALL" />
+            <cmd id="UPDATE_PROFILE" />
+        </accepts>
+    </cmds>
+  </nodeDef>
+
+  <nodeDef id="sundata" nodeType="139" nls="SUN">
+      <sts >
+          <st id="ST" editor="I_HOUR" />
+          <st id="GV0" editor="I_MINUTE" />
+          <st id="GV1" editor="I_HOUR" />
+          <st id="GV2" editor="I_MINUTE" />
+          <st id="GV3" editor="I_HOUR" />
+          <st id="GV4" editor="I_MINUTE" />
+          <st id="GV5" editor="I_HOUR" />
+          <st id="GV6" editor="I_MINUTE" />
+      </sts>
+    <cmds>
+         <accepts>
+            <cmd id = "QUERY" />
+        </accepts>
+    </cmds>
+  </nodeDef>
+
+ </nodeDefs>

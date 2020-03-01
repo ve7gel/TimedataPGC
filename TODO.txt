@@ -1,0 +1,13 @@
+TODO
+
+3. Change node update functions to methods instead of inline in longPoll.( Perhaps move to separate files)
+
+
+
+
+COMPLETED
+1. Strip invalid ascii characters out of zone and program names ie & Done
+2. Finish adding metric/us units conversions. - Done
+4. Remove global variables and build in to calls. -Done
+5. Finish changes to allow use with RM hardware version 1 - Done
+6. Add ability to change logging levels to primary node interface. - Done
