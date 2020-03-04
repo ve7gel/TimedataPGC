@@ -4,8 +4,6 @@
     "type": "python3",
     "executable": "timedata.py",
     "description": "Time Data server for the ISY994",
-    "install": "install.sh",
-    "install_cloud": "install_cloud.sh",
     "notice": "",
     "shortPoll": "30",
     "longPoll": "3600",
