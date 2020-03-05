@@ -3,6 +3,7 @@
     "docs": "https://github.com/VE7GEL/Timedata_pgtest",
     "type": "python3",
     "executable": "timedata.py",
+    "install_cloud": "install_cloud.sh",
     "description": "Time Data server for the ISY994",
     "notice": "Alpha",
     "shortPoll": "30",
