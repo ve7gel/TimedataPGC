@@ -1,5 +1,5 @@
 {
-    "name": "Timedata_pgtest",
+    "name": "TimedataPGC",
     "docs": "https://github.com/VE7GEL/Timedata_pgtest",
     "type": "python3",
     "executable": "timedata.py",
