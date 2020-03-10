@@ -1,23 +1,23 @@
 {
     "name": "TimedataPGC",
-    "docs": "https://github.com/VE7GEL/Timedata_pgtest",
+    "docs": "https://github.com/VE7GEL/TimedataPGC",
     "type": "python3",
     "executable": "timedata.py",
-    "install_cloud": "install_cloud.sh",
     "description": "Time Data server for the ISY994",
-    "notice": "Alpha",
+    "install": "install.sh",
+    "notice": "",
     "shortPoll": "30",
     "longPoll": "3600",
-    "testMode": true,
+    "testMode": false,
     "profile_version": "2.1.1",
     "credits": [
         {
-            "title": "ISY Timedata_pgtest: a Time Information server for the ISY 994",
+            "title": "ISY TimedataPGC: a Time Information server for the ISY 994",
             "author": "Gordon Larsen",
-            "version": "2.1.1",
-            "date": "February 28, 2020",
-            "source": "https://github.com/ve7gel/Timedata_pgtest",
-            "license": "https://github.com/ve7gel/Timedata_pgtest/blob/master/LICENSE"
+            "version": "2.2.3",
+            "date": "March 8, 2020",
+            "source": "https://github.com/ve7gel/TimedataPGC",
+            "license": "https://github.com/ve7gel/TimedataPGC/blob/master/LICENSE"
         }
     ]
 }

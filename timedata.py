@@ -15,8 +15,8 @@ import sys
 from datetime import datetime, timedelta
 import calendar
 from math import trunc
-
-from suntime import Sun, SunTimeException
+from astral import LocationInfo
+from astral.sun import sun
 from utils import utils
 
 """
@@ -54,10 +54,10 @@ class TimeData(polyinterface.Controller):
             40: 'Warning',
             50: 'Critical'
         }
-
+        self.isdst = 0
         self.latitude = ''
         self.longitude = ''
-        self.hemisphere = 'north' # Default to northern hemisphere
+        self.hemisphere = 'north'  # Default to northern hemisphere
 
     def start(self):
         """
@@ -89,7 +89,7 @@ class TimeData(polyinterface.Controller):
         self.getNodeUpdates()
 
     def longPoll(self):
-        LOGGER.debug("In longPoll, Lat: {}, Lon: {}".format(self.latitude,self.longitude))
+        LOGGER.debug("In longPoll, Lat: {}, Lon: {}".format(self.latitude, self.longitude))
         if self.latitude == '' or self.longitude == '':
             return
 
@@ -150,20 +150,22 @@ class TimeData(polyinterface.Controller):
         # self.setDriver('GV12', -time.timezone / 3600)
         self.setDriver('GV12', self.currenttz(timestruct.tm_isdst))
 
-        self.setDriver('GV13', timestruct.tm_isdst)
+        self.isdst = timestruct.tm_isdst
+        self.setDriver('GV13', self.isdst)
 
-        epochdays = trunc(round(datetime.now().timestamp()/(3600 * 24),0))
+        epochdays = trunc(round(datetime.now().timestamp() / (3600 * 24), 0))
         self.setDriver('GV15', epochdays)
 
         hoursytd = timestruct.tm_yday
         hoursytd = hoursytd - 1
         hoursytd = hoursytd * 24 + timestruct.tm_hour
         self.setDriver('GV14', hoursytd)
-        
+
         LOGGER.debug(
-            "Stripped date string is {0}-{1}-{2} {3}:{4}, weekday {5}, days since epoch: {6}, hours this year: {7}".format(timestruct.tm_year, timestruct.tm_mon,
-                                                                        timestruct.tm_mday, timestruct.tm_hour,
-                                                                        timestruct.tm_min, timestruct.tm_wday, epochdays, hoursytd))
+            "Stripped date string is {0}-{1}-{2} {3}:{4}, weekday {5}, days since epoch: {6}, hours this year: {7}".format(
+                timestruct.tm_year, timestruct.tm_mon,
+                timestruct.tm_mday, timestruct.tm_hour,
+                timestruct.tm_min, timestruct.tm_wday, epochdays, hoursytd))
         LOGGER.debug(
             "Day of week {0}, Week number {1}, Day of Year {2}".format(timestruct.tm_wday, weeknum, timestruct.tm_yday))
         LOGGER.debug(
@@ -172,19 +174,20 @@ class TimeData(polyinterface.Controller):
                                                                                                       leapyear,
                                                                                                       timestruct.tm_isdst,
                                                                                                       self.hemisphere))
+
     def displaySunriseSunsetData_today(self):
         # Sunrise and sunset calculations
         s = datetime.now()
-        w_day = timedelta(days = 1)
 
         sundt, sun_sr, sun_ss = self.getsunrise_sunset(self.latitude, self.longitude, datetime.date(s))
-        LOGGER.debug("In getsunrise_sunset, sun_sr:{0}, sun_ss:{1}".format(sun_sr, sun_ss))
+        LOGGER.debug("In displaySunriseSunsetData_today, sun_sr:{0}, sun_ss:{1}".format(sun_sr, sun_ss))
 
-        LOGGER.debug('On {} the sun rose  at {} and set at {}.'.format(sundt, sun_sr.strftime('%H:%M'), sun_ss.strftime('%H:%M')))
-        self.nodes['sundata'].setDriver('ST', format(sun_sr.strftime('%-H')) )
-        self.nodes['sundata'].setDriver('GV0', format(sun_sr.strftime('%-M')) )
-        self.nodes['sundata'].setDriver('GV1', format(sun_ss.strftime('%-H')) )
-        self.nodes['sundata'].setDriver('GV2', format(sun_ss.strftime('%-M')) )
+        LOGGER.debug('On {} the sun rose  at {} and set at {}.'.format(sundt, sun_sr.strftime('%H:%M'),
+                                                                       sun_ss.strftime('%H:%M')))
+        self.nodes['sundata'].setDriver('ST', format(sun_sr.strftime('%-H')))
+        self.nodes['sundata'].setDriver('GV0', format(sun_sr.strftime('%-M')))
+        self.nodes['sundata'].setDriver('GV1', format(sun_ss.strftime('%-H')))
+        self.nodes['sundata'].setDriver('GV2', format(sun_ss.strftime('%-M')))
 
     def displaySunriseSunsetData_tomorrow(self):
         # Sunrise and sunset calculations
@@ -193,26 +196,34 @@ class TimeData(polyinterface.Controller):
         m = today.month
         d = today.day
 
-        s = datetime( y, m, d )
-        LOGGER.debug("Today's date: {}".format( s ))
-        s += timedelta( days=1 )
-        LOGGER.debug("Tomorrow's date: {}".format( s ))
+        s = datetime(y, m, d)
+        LOGGER.debug("Today's date: {}".format(s))
+        s += timedelta(days=1)
+        LOGGER.debug("Tomorrow's date: {}".format(s))
 
         sundt, sun_sr, sun_ss = self.getsunrise_sunset(self.latitude, self.longitude, datetime.date(s))
-        LOGGER.debug('On {} the sun rises  at {} and sets at {}.'.format(sundt, sun_sr.strftime('%H:%M'), sun_ss.strftime('%H:%M')))
+        LOGGER.debug('On {} the sun rises  at {} and sets at {}.'.format(sundt, sun_sr.strftime('%H:%M'),
+                                                                         sun_ss.strftime('%H:%M')))
 
-        self.nodes['sundata'].setDriver('GV3', format(sun_sr.strftime('%-H')) )
-        self.nodes['sundata'].setDriver('GV4', format(sun_sr.strftime('%-M')) )
-        self.nodes['sundata'].setDriver('GV5', format(sun_ss.strftime('%-H')) )
-        self.nodes['sundata'].setDriver('GV6', format(sun_ss.strftime('%-M')) )
+        self.nodes['sundata'].setDriver('GV3', format(sun_sr.strftime('%-H')))
+        self.nodes['sundata'].setDriver('GV4', format(sun_sr.strftime('%-M')))
+        self.nodes['sundata'].setDriver('GV5', format(sun_ss.strftime('%-H')))
+        self.nodes['sundata'].setDriver('GV6', format(sun_ss.strftime('%-M')))
 
     def getsunrise_sunset(self, latitude, longitude, sundt):
-        LOGGER.debug("Latitude: {0}, Longitude: {1}".format(float(self.latitude),float(self.longitude)))
-        sun = Sun(float(latitude), float(longitude))
-        sun_sr = sun.get_local_sunrise_time(sundt)
-        sun_ss = sun.get_local_sunset_time(sundt)
+        LOGGER.debug("Latitude: {0}, Longitude: {1}".format(float(self.latitude), float(self.longitude)))
 
+        l = LocationInfo('name', 'region', 'time/zone', latitude, longitude)
+        s = sun(l.observer, sundt)
+        sun_sr = self.utc_to_local(s["sunrise"], self.isdst)
+        sun_ss = self.utc_to_local(s["sunset"], self.isdst)
         return sundt, sun_sr, sun_ss
+
+    def utc_to_local (self, dt, isdst):
+        if isdst:
+            return dt - timedelta( seconds=time.altzone )
+        else:
+            return dt - timedelta( seconds=time.timezone )
 
     def currenttz(self, dst):
         if dst == 0:
@@ -258,7 +269,7 @@ class TimeData(polyinterface.Controller):
 
         LOGGER.info("Setting configuration")
         LOGGER.debug("polyConfig: {}".format(self.polyConfig))
-        #if float(self.latitude) >= 0:
+        # if float(self.latitude) >= 0:
         #    self.hemisphere = 'north'
         self.addCustomParam({
             'Latitude': self.latitude,
@@ -268,7 +279,7 @@ class TimeData(polyinterface.Controller):
             self.hemisphere = self.polyConfig['customData']['Hemisphere']
 
         else:
-            self.saveCustomData({'Hemisphere':self.hemisphere})
+            self.saveCustomData({'Hemisphere': self.hemisphere})
 
         if 'Loglevel' in self.polyConfig['customData']:
             self.loglevelsetting = self.polyConfig['customData']['Loglevel']
@@ -291,9 +302,9 @@ class TimeData(polyinterface.Controller):
 
         # Add a notice?
         if self.latitude == '':
-            self.addNotice( "Latitude setting is required." )
+            self.addNotice("Latitude setting is required.")
         if self.longitude == '':
-            self.addNotice( "Longitude setting is required." )
+            self.addNotice("Longitude setting is required.")
 
     def set_configuration(self, config):
         LOGGER.info("Checking existing configuration values")
@@ -385,20 +396,21 @@ class TimeData(polyinterface.Controller):
         <st id="GV15" editor="I_HOUR" />
         <st id="GV16" editor="LOGLEVEL" />
     """
+
+
 class SunData(polyinterface.Node):
     id = "sundata"
 
-    def __init__ (self, controller, primary, address, name):
-
+    def __init__(self, controller, primary, address, name):
         super(SunData, self).__init__(controller, primary, address, name)
 
     def query(self):
         self.reportDrivers()
 
     drivers = [
-        {'driver': 'ST', 'value': 0, 'uom': 0 }, # Sunrise hour today
-        {'driver': 'GV0', 'value': 0, 'uom': 0 },  # Sunrise minute today
-        {'driver': 'GV1', 'value': 0, 'uom': 0}, # Sunset hour today
+        {'driver': 'ST', 'value': 0, 'uom': 0},  # Sunrise hour today
+        {'driver': 'GV0', 'value': 0, 'uom': 0},  # Sunrise minute today
+        {'driver': 'GV1', 'value': 0, 'uom': 0},  # Sunset hour today
         {'driver': 'GV2', 'value': 0, 'uom': 0},  # Sunset minute today
         {'driver': 'GV3', 'value': 0, 'uom': 0},  # Sunrise hour tomorrow
         {'driver': 'GV4', 'value': 0, 'uom': 0},  # Sunrise minute tomorrow

@@ -8,9 +8,18 @@ Latitude and Longitude entries are required to determine sundata and hemisphere.
 Timezone offset SHOULD be DST aware, but has not been tested for every timezone permutation.
 
 Tested OK on Polisy and RPi
-
+### Issues
+Please post any issues encountered on the UDI Forum at "https://forum.universal-devices.com/topic/28797-new-isy-time-data-poly/".  Github is not monitored.
 
 ## Release Notes
+- 2.2.3 08/03/2020
+    - fix sunrise/sunset tomorrow
+- 2.2.2 08/03/2020
+    - replace sunrise/sunset algorithm with astral library. The algorithm didn't correctly calculate sunset on the first day of DST.  This may require deleting, uninstalling, reinstalling and readding to NS to install the new requirements.
+- 2.2.1 08/03/2020
+    - revert to previous version for compatibility with Polisy
+- 2.2.0 08/03/2020
+    - replace sunrise/sunset algorithm with ephem() library. The algorithm didn't correctly calculate sunset on the first day of DST.  This may require deleting, uninstalling, reinstalling and readding to NS to install the new requirements.
 - 2.1.1 28/02/202
     - a couple of user suggested changes to UOMs.
 - 2.1.0 27/02/2020
