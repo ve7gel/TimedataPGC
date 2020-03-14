@@ -2,7 +2,7 @@
     "name": "TimedataPGC",
     "docs": "https://github.com/VE7GEL/TimedataPGC",
     "type": "python3",
-    "executable": "timedataPGC.py",
+    "executable": "timedatapgc.py",
     "description": "Time Data server for the ISY994",
     "install_cloud": "install_cloud.sh",
     "notice": "",
