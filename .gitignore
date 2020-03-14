@@ -1,2 +1,6 @@
 /profile.zip
 /profile/version.txt
+/dev/Dockerfile.test
+/dev/get-docker.sh
+/dev/run_test.sh
+/dev/startup.sh

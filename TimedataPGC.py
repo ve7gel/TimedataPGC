@@ -57,6 +57,7 @@ class TimeData(polyinterface.Controller):
         self.isdst = 0
         self.latitude = ''
         self.longitude = ''
+        self.localtz = ''
         self.hemisphere = 'north'  # Default to northern hemisphere
 
     def start(self):
@@ -78,7 +79,7 @@ class TimeData(polyinterface.Controller):
         self.poly.installprofile()
         self.check_params()
         self.installSunNode()
-        if self.latitude == '' or self.longitude == '':
+        if self.latitude == '' or self.longitude == '' or self.localtz == '':
             return
 
         self.getNodeUpdates()
@@ -86,6 +87,9 @@ class TimeData(polyinterface.Controller):
         self.displaySunriseSunsetData_tomorrow()
 
     def shortPoll(self):
+        if self.latitude == '' or self.longitude == '' or self.localtz == '':
+            return
+
         self.getNodeUpdates()
 
     def longPoll(self):
@@ -110,16 +114,17 @@ class TimeData(polyinterface.Controller):
     def getNodeUpdates(self):
         if self.hemisphere == '':
             return
-
+        LOGGER.debug("Local timezone: {}".format(self.localtz))
         today = datetime.now()
 
         timestruct = time.localtime()
 
         LOGGER.debug("Whole timestruct is {}".format(timestruct))
+        LOGGER.debug("Timestruct.tm_hour type: {}".format(timestruct.tm_hour))
 
-        self.setDriver('GV0', timestruct.tm_hour)
-        self.setDriver('GV1', timestruct.tm_min)
-        self.setDriver('GV2', timestruct.tm_mday)
+        self.setDriver('GV0', str(timestruct.tm_hour))
+        self.setDriver('GV1', str(timestruct.tm_min))
+        self.setDriver('GV2', str(timestruct.tm_mday))
         self.setDriver('GV3', timestruct.tm_mon)
         self.setDriver('GV4', timestruct.tm_year)
         self.setDriver('GV5', timestruct.tm_wday)
@@ -205,7 +210,7 @@ class TimeData(polyinterface.Controller):
         LOGGER.debug('On {} the sun rises  at {} and sets at {}.'.format(sundt, sun_sr.strftime('%H:%M'),
                                                                          sun_ss.strftime('%H:%M')))
 
-        self.nodes['sundata'].setDriver('GV3', format(sun_sr.strftime('%-H')))
+        self.nodes['sundata'].setDriver('GV3', format(sun_sr.strftime('%-H')), force=True)
         self.nodes['sundata'].setDriver('GV4', format(sun_sr.strftime('%-M')))
         self.nodes['sundata'].setDriver('GV5', format(sun_ss.strftime('%-H')))
         self.nodes['sundata'].setDriver('GV6', format(sun_ss.strftime('%-M')))
@@ -274,6 +279,7 @@ class TimeData(polyinterface.Controller):
         self.addCustomParam({
             'Latitude': self.latitude,
             'Longitude': self.longitude,
+            'Timezone': self.localtz,
         })
         if 'Hemisphere' in self.polyConfig['customData']:
             self.hemisphere = self.polyConfig['customData']['Hemisphere']
@@ -305,6 +311,8 @@ class TimeData(polyinterface.Controller):
             self.addNotice("Latitude setting is required.")
         if self.longitude == '':
             self.addNotice("Longitude setting is required.")
+        if self.localtz == '':
+            self.addNotice("Local timezone setting is required")
 
     def set_configuration(self, config):
         LOGGER.info("Checking existing configuration values")
@@ -318,6 +326,11 @@ class TimeData(polyinterface.Controller):
             self.longitude = config['customParams']['Longitude']
         else:
             self.longitude = ''
+
+        if 'Timezone' in config['customParams']:
+            self.localtz = config['customParams']['Timezone']
+        else:
+            self.localtz = ''
 
         LOGGER.debug('polyConfig[params]: {}'.format(self.polyConfig['customParams']))
 
