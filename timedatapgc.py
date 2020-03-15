@@ -11,6 +11,7 @@ except ImportError:
     import pgc_interface as polyinterface
 
 import time
+import os
 import sys
 from datetime import datetime, timedelta
 import calendar
@@ -81,7 +82,7 @@ class TimeData(polyinterface.Controller):
         self.installSunNode()
         if self.latitude == '' or self.longitude == '' or self.localtz == '':
             return
-
+        os.environ['TZ'] = self.localtz
         self.getNodeUpdates()
         self.displaySunriseSunsetData_today()
         self.displaySunriseSunsetData_tomorrow()
@@ -120,25 +121,25 @@ class TimeData(polyinterface.Controller):
         timestruct = time.localtime()
 
         LOGGER.debug("Whole timestruct is {}".format(timestruct))
-        LOGGER.debug("Timestruct.tm_hour type: {}".format(timestruct.tm_hour))
 
-        self.setDriver('GV0', str(timestruct.tm_hour))
+        #self.setDriver('GV0', str(timestruct.tm_hour))
+        self.setDriver('GV0', '8')
         self.setDriver('GV1', str(timestruct.tm_min))
         self.setDriver('GV2', str(timestruct.tm_mday))
         self.setDriver('GV3', timestruct.tm_mon)
-        self.setDriver('GV4', timestruct.tm_year)
+        self.setDriver('GV4', str(timestruct.tm_year))
         self.setDriver('GV5', timestruct.tm_wday)
         # GV6
         weeknum = int(datetime.strftime(today, '%U')) + 1
-        self.setDriver('GV6', weeknum)
-        self.setDriver('GV7', timestruct.tm_yday)
+        self.setDriver('GV6', str(weeknum))
+        self.setDriver('GV7', str(timestruct.tm_yday))
         # GV8 - odd or even day?
         oe = int(timestruct.tm_mday) % 2
         self.setDriver('GV8', oe)
         # GV9
         minutesinyear = (int(timestruct.tm_yday) - 1) * 24 * 60
         minutesinyear = minutesinyear + int(timestruct.tm_hour) * 60 + int(timestruct.tm_min)
-        self.setDriver('GV9', minutesinyear)
+        self.setDriver('GV9', str(minutesinyear))
 
         localseason = self.season(datetime.now(), self.hemisphere)
         self.setDriver('GV10', localseason)
