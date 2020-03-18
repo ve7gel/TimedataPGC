@@ -164,7 +164,7 @@ class TimeData(polyinterface.Controller):
         self.setDriver('GV5', timestruct.tm_wday)
         # GV6
         weeknum = int(datetime.strftime(self.today, '%U')) + 1
-        self.setDriver('GV6', str(weeknum))
+        self.setDriver('GV6', weeknum)
         self.setDriver('GV7', str(timestruct.tm_yday))
         # GV8 - odd or even day?
         oe = int(timestruct.tm_mday) % 2
