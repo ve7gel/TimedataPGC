@@ -382,7 +382,7 @@ class TimeData(polyinterface.Controller):
         {'driver': 'GV3', 'value': 0, 'uom': 25},
         {'driver': 'GV4', 'value': 0, 'uom': 77},
         {'driver': 'GV5', 'value': 0, 'uom': 25},
-        {'driver': 'GV6', 'value': 0, 'uom': 0},
+        {'driver': 'GV6', 'value': 0, 'uom': 77},
         {'driver': 'GV7', 'value': 0, 'uom': 10},
         {'driver': 'GV8', 'value': 0, 'uom': 25},
         {'driver': 'GV9', 'value': 0, 'uom': 45},
