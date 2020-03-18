@@ -6,12 +6,12 @@
         <st id="GV1" editor="I_MINUTE" />
         <st id="GV2" editor="I_DOM" />
         <st id="GV3" editor="I_MONTH" />
-        <st id="GV4" editor="I_NONE" />
+        <st id="GV4" editor="I_YEAR" />
         <st id="GV5" editor="I_WEEKDAY" />
         <st id="GV6" editor="I_WOY" />
         <st id="GV7" editor="I_DOY" />
         <st id="GV8" editor="ODDEVEN" />
-        <st id="GV9" editor="I_NONE" />
+        <st id="GV9" editor="I_MINUTE" />
         <st id="GV10" editor="SEASON" />
         <st id="GV11" editor="bool" />
         <st id="GV12" editor="I_TZ" />

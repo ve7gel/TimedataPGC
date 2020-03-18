@@ -6,6 +6,14 @@
 - shortPoll 
     - data update interval, default 30 seconds
 
-# Configuration
-- Enter latitude in the form 12.3456, negative is south
-- Enter longitude in the form 123.4567, negative is west
+#### Configuration Parameters for TimedataPGC
+'Latitude'
+ - Enter latitude in the form 12.3456, negative is south
+ 
+'Longitude'
+ - Enter longitude in the form 123.4567, negative is west
+
+'Timezone'
+ - Enter time zone in the form 'America/Vancouver'
+ 
+ Note that parameters are currently case sensitive.

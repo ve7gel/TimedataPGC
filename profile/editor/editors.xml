@@ -18,10 +18,13 @@
 		<range uom="19" min="0" max="23" />
 	</editor>
 	<editor id="I_Y_HOUR">
-		<range uom="19" min="0" max="8784" />
+		<range uom="20" min="0" max="8784" />
 	</editor>
 	<editor id="I_E_DAY">
 		<range uom="10" min="0" max="99999" />
+	</editor>
+	<editor id="I_YEAR">
+		<range uom="77" min="2020" max="2100" />
 	</editor>
 	<editor id="I_MINUTE">
 		<range uom="44" min="0" max="59" />

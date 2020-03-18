@@ -14,11 +14,13 @@ import time
 import os
 import sys
 from datetime import datetime, timedelta
+import dateutil.tz
 import calendar
 from math import trunc
 from astral import LocationInfo
 from astral.sun import sun
 from utils import utils
+import pytz
 
 """
 Import the polyglot interface module. This is in pypy so you can just install it
@@ -32,6 +34,31 @@ polyinterface has a LOGGER that is created by default and logs to:
 logs/debug.log
 You can use LOGGER.info, LOGGER.warning, LOGGER.debug, LOGGER.error levels as needed.
 """
+
+def season(date, hemisphere):
+    """
+        date is a datetime object
+        hemisphere is either 'north' or 'south', dependent on long/lat.
+        https://stackoverflow.com/questions/16139306/determine-season-given-timestamp-in-python-using-datetime
+    """
+    md = date.month * 100 + date.day
+    LOGGER.debug("md: {}".format(md))
+    if (md > 320) and (md < 621):
+        s = 0  # spring
+    elif (md > 620) and (md < 923):
+        s = 1  # summer
+    elif (md > 922) and (md < 1223):
+        s = 2  # fall
+    else:
+        s = 3  # winter
+
+    if hemisphere != 'north':
+        if s < 2:
+            s += 2
+        else:
+            s -= 2
+
+    return s
 
 
 class TimeData(polyinterface.Controller):
@@ -59,6 +86,8 @@ class TimeData(polyinterface.Controller):
         self.latitude = ''
         self.longitude = ''
         self.localtz = ''
+        self.utcdiff = None
+        self.today = ''
         self.hemisphere = 'north'  # Default to northern hemisphere
 
     def start(self):
@@ -77,12 +106,15 @@ class TimeData(polyinterface.Controller):
         LOGGER.debug("Server data: {}".format(serverdata))
         utils.update_version(LOGGER)
         utils.profile_zip(LOGGER)
+
         self.poly.installprofile()
         self.check_params()
         self.installSunNode()
+
         if self.latitude == '' or self.longitude == '' or self.localtz == '':
             return
         os.environ['TZ'] = self.localtz
+
         self.getNodeUpdates()
         self.displaySunriseSunsetData_today()
         self.displaySunriseSunsetData_tomorrow()
@@ -116,21 +148,22 @@ class TimeData(polyinterface.Controller):
         if self.hemisphere == '':
             return
         LOGGER.debug("Local timezone: {}".format(self.localtz))
-        today = datetime.now()
+        tzdata = pytz.timezone(self.localtz)
+        self.today = datetime.now(tz=tzdata)
 
-        timestruct = time.localtime()
+        # timestruct = time.localtime()
+        timestruct = self.today.timetuple()
 
         LOGGER.debug("Whole timestruct is {}".format(timestruct))
 
-        #self.setDriver('GV0', str(timestruct.tm_hour))
-        self.setDriver('GV0', '8')
-        self.setDriver('GV1', str(timestruct.tm_min))
-        self.setDriver('GV2', str(timestruct.tm_mday))
+        self.setDriver('GV0', timestruct.tm_hour)
+        self.setDriver('GV1', timestruct.tm_min)
+        self.setDriver('GV2', timestruct.tm_mday)
         self.setDriver('GV3', timestruct.tm_mon)
-        self.setDriver('GV4', str(timestruct.tm_year))
+        self.setDriver('GV4', timestruct.tm_year)
         self.setDriver('GV5', timestruct.tm_wday)
         # GV6
-        weeknum = int(datetime.strftime(today, '%U')) + 1
+        weeknum = int(datetime.strftime(self.today, '%U')) + 1
         self.setDriver('GV6', str(weeknum))
         self.setDriver('GV7', str(timestruct.tm_yday))
         # GV8 - odd or even day?
@@ -141,7 +174,7 @@ class TimeData(polyinterface.Controller):
         minutesinyear = minutesinyear + int(timestruct.tm_hour) * 60 + int(timestruct.tm_min)
         self.setDriver('GV9', str(minutesinyear))
 
-        localseason = self.season(datetime.now(), self.hemisphere)
+        localseason = season(datetime.now(), self.hemisphere)
         self.setDriver('GV10', localseason)
         # GV11
         # leapyear = leapYear(str(year) + '-' + str(month) + '-' + str(day))
@@ -152,9 +185,11 @@ class TimeData(polyinterface.Controller):
 
         self.setDriver('GV11', leapyear)
         # GV12
-        LOGGER.debug("UTC offset: {}".format(self.currenttz(timestruct.tm_isdst)))
+        self.utcdiff = datetime.now(pytz.timezone(self.localtz))
+        utcoffset = self.utcdiff.utcoffset().total_seconds() / 3600
+        LOGGER.debug("UTC offset: {}".format(utcoffset))
         # self.setDriver('GV12', -time.timezone / 3600)
-        self.setDriver('GV12', self.currenttz(timestruct.tm_isdst))
+        self.setDriver('GV12', utcoffset)
 
         self.isdst = timestruct.tm_isdst
         self.setDriver('GV13', self.isdst)
@@ -183,10 +218,11 @@ class TimeData(polyinterface.Controller):
 
     def displaySunriseSunsetData_today(self):
         # Sunrise and sunset calculations
-        s = datetime.now()
+        s = self.today
 
         sundt, sun_sr, sun_ss = self.getsunrise_sunset(self.latitude, self.longitude, datetime.date(s))
-        LOGGER.debug("In displaySunriseSunsetData_today, sun_sr:{0}, sun_ss:{1}".format(sun_sr, sun_ss))
+        LOGGER.debug(
+            "In displaySunriseSunsetData_today, s: {}, sun_sr:{}, sun_ss:{}".format(datetime.date(s), sun_sr, sun_ss))
 
         LOGGER.debug('On {} the sun rose  at {} and set at {}.'.format(sundt, sun_sr.strftime('%H:%M'),
                                                                        sun_ss.strftime('%H:%M')))
@@ -197,7 +233,7 @@ class TimeData(polyinterface.Controller):
 
     def displaySunriseSunsetData_tomorrow(self):
         # Sunrise and sunset calculations
-        today = datetime.now()
+        today = self.today
         y = today.year
         m = today.month
         d = today.day
@@ -211,58 +247,27 @@ class TimeData(polyinterface.Controller):
         LOGGER.debug('On {} the sun rises  at {} and sets at {}.'.format(sundt, sun_sr.strftime('%H:%M'),
                                                                          sun_ss.strftime('%H:%M')))
 
-        self.nodes['sundata'].setDriver('GV3', format(sun_sr.strftime('%-H')), force=True)
+        self.nodes['sundata'].setDriver('GV3', format(sun_sr.strftime('%-H')))
         self.nodes['sundata'].setDriver('GV4', format(sun_sr.strftime('%-M')))
         self.nodes['sundata'].setDriver('GV5', format(sun_ss.strftime('%-H')))
         self.nodes['sundata'].setDriver('GV6', format(sun_ss.strftime('%-M')))
 
     def getsunrise_sunset(self, latitude, longitude, sundt):
-        LOGGER.debug("Latitude: {0}, Longitude: {1}".format(float(self.latitude), float(self.longitude)))
-
-        l = LocationInfo('name', 'region', 'time/zone', latitude, longitude)
+        LOGGER.debug(
+            "In getsunrisesunset - Latitude: {}, Longitude: {}. Timezone: {}".format(float(latitude), float(longitude),
+                                                                                     self.localtz))
+        l = LocationInfo('name', 'region', self.localtz, latitude, longitude)
         s = sun(l.observer, sundt)
-        sun_sr = self.utc_to_local(s["sunrise"], self.isdst)
-        sun_ss = self.utc_to_local(s["sunset"], self.isdst)
+        sun_sr = self.utc_to_local(s["sunrise"])
+
+        sun_ss = self.utc_to_local(s["sunset"])
+
         return sundt, sun_sr, sun_ss
 
-    def utc_to_local (self, dt, isdst):
-        if isdst:
-            return dt - timedelta( seconds=time.altzone )
-        else:
-            return dt - timedelta( seconds=time.timezone )
+    def utc_to_local(self, dt):
 
-    def currenttz(self, dst):
-        if dst == 0:
-            return -time.timezone / 3600
-        elif dst == 1:
-            return -time.altzone / 3600
-        else:
-            return 0
+        return dt + timedelta(seconds=float(self.utcdiff.utcoffset().total_seconds()))
 
-    def season(self, date, hemisphere):
-        """
-            date is a datetime object
-            hemisphere is either 'north' or 'south', dependent on long/lat.
-            https://stackoverflow.com/questions/16139306/determine-season-given-timestamp-in-python-using-datetime
-        """
-        md = date.month * 100 + date.day
-        LOGGER.debug("md: {}".format(md))
-        if (md > 320) and (md < 621):
-            s = 0  # spring
-        elif (md > 620) and (md < 923):
-            s = 1  # summer
-        elif (md > 922) and (md < 1223):
-            s = 2  # fall
-        else:
-            s = 3  # winter
-
-        if hemisphere != 'north':
-            if s < 2:
-                s += 2
-            else:
-                s -= 2
-
-        return s
 
     def delete(self):
         LOGGER.info('Timedata Nodeserver deleted')
@@ -275,8 +280,7 @@ class TimeData(polyinterface.Controller):
 
         LOGGER.info("Setting configuration")
         LOGGER.debug("polyConfig: {}".format(self.polyConfig))
-        # if float(self.latitude) >= 0:
-        #    self.hemisphere = 'north'
+
         self.addCustomParam({
             'Latitude': self.latitude,
             'Longitude': self.longitude,
@@ -288,12 +292,12 @@ class TimeData(polyinterface.Controller):
         else:
             self.saveCustomData({'Hemisphere': self.hemisphere})
 
+        # Restore stored loglevel
         if 'Loglevel' in self.polyConfig['customData']:
             self.loglevelsetting = self.polyConfig['customData']['Loglevel']
             self.setDriver('GV16', self.loglevelsetting)
             LOGGER.setLevel(self.loglevelsetting)
             LOGGER.info("Loglevel set to: {}".format(self.loglevel[self.loglevelsetting]))
-            self.setDriver('GV16', self.loglevelsetting)
 
         else:
             self.saveCustomData({
@@ -372,22 +376,22 @@ class TimeData(polyinterface.Controller):
 
     drivers = [
         {'driver': 'ST', 'value': 1, 'uom': 2},
-        {'driver': 'GV0', 'value': 0, 'uom': 0},
-        {'driver': 'GV1', 'value': 0, 'uom': 0},
-        {'driver': 'GV2', 'value': 0, 'uom': 0},
+        {'driver': 'GV0', 'value': 0, 'uom': 19},
+        {'driver': 'GV1', 'value': 0, 'uom': 44},
+        {'driver': 'GV2', 'value': 0, 'uom': 10},
         {'driver': 'GV3', 'value': 0, 'uom': 25},
-        {'driver': 'GV4', 'value': 0, 'uom': 0},
+        {'driver': 'GV4', 'value': 0, 'uom': 77},
         {'driver': 'GV5', 'value': 0, 'uom': 25},
         {'driver': 'GV6', 'value': 0, 'uom': 0},
-        {'driver': 'GV7', 'value': 0, 'uom': 0},
+        {'driver': 'GV7', 'value': 0, 'uom': 10},
         {'driver': 'GV8', 'value': 0, 'uom': 25},
-        {'driver': 'GV9', 'value': 0, 'uom': 0},
+        {'driver': 'GV9', 'value': 0, 'uom': 45},
         {'driver': 'GV10', 'value': 0, 'uom': 25},
         {'driver': 'GV11', 'value': 0, 'uom': 2},
-        {'driver': 'GV12', 'value': 0, 'uom': 0},
+        {'driver': 'GV12', 'value': 0, 'uom': 20},
         {'driver': 'GV13', 'value': 0, 'uom': 2},
-        {'driver': 'GV14', 'value': 0, 'uom': 0},
-        {'driver': 'GV15', 'value': 0, 'uom': 0},
+        {'driver': 'GV14', 'value': 0, 'uom': 20},
+        {'driver': 'GV15', 'value': 0, 'uom': 10},
         {'driver': 'GV16', 'value': 0, 'uom': 25},
     ]
     """

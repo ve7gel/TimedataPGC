@@ -12,6 +12,8 @@ Tested OK on Polisy and RPi
 Please post any issues encountered on the UDI Forum at "https://forum.universal-devices.com/topic/28797-new-isy-time-data-poly/".  Github is not monitored.
 
 ## Release Notes
+- 2.2.4 15/03/2020
+    - add editor for year in timedata
 - 2.2.3 08/03/2020
     - fix sunrise/sunset tomorrow
 - 2.2.2 08/03/2020
