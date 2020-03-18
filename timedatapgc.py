@@ -312,12 +312,17 @@ class TimeData(polyinterface.Controller):
         self.removeNoticesAll()
 
         # Add a notice?
+        notices_dict = {}
         if self.latitude == '':
-            self.addNotice("Latitude setting is required.")
+            notices_dict['Latitude'] = 'Please set your location Latitude, e.g. 12.345, negative south'
+            # self.addNotice("Latitude setting is required.")
         if self.longitude == '':
-            self.addNotice("Longitude setting is required.")
+            # self.addNotice("Longitude setting is required.")
+            notices_dict['Longitude'] = 'Please set your location Longitude, e.g. -123.456, negative west'
         if self.localtz == '':
-            self.addNotice("Local timezone setting is required")
+            # self.addNotice("Local timezone setting is required")
+            notices_dict['Timezone'] = 'Please set your location Timezone, e.g. America/Vancouver'
+        self.addNotice(notices_dict)
 
     def set_configuration(self, config):
         LOGGER.info("Checking existing configuration values")
