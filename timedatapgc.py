@@ -283,16 +283,35 @@ class TimeData(polyinterface.Controller):
         LOGGER.info('Timedata NodeServer stopped.')
 
     def check_params(self):
-        self.set_configuration(self.polyConfig)
 
         LOGGER.info("Setting configuration")
         LOGGER.debug("polyConfig: {}".format(self.polyConfig))
 
-        self.addCustomParam({
-            'Latitude': self.latitude,
-            'Longitude': self.longitude,
-            'Timezone': self.localtz,
-        })
+        #self.addCustomParam({
+        #    'Latitude': self.latitude,
+        #    'Longitude': self.longitude,
+        #    'Timezone': self.localtz,
+        #})
+        LOGGER.info("Checking existing configuration values")
+
+        if 'Latitude' not in self.polyConfig['customParams']:
+            self.addCustomParam({'Latitude': 48.5927})
+
+        self.latitude = self.polyConfig['customParams']['Latitude']
+        time.sleep(2)
+
+        if 'Longitude' not in self.polyConfig['customParams']:
+            self.addCustomParam({'Longitude': -123.4218})
+        self.longitude = self.polyConfig['customParams']['Longitude']
+        time.sleep(2)
+
+        if 'Timezone' not in self.polyConfig['customParams']:
+            self.addCustomParam({'Timezone': 'America/Vancouver'})
+        self.localtz = self.polyConfig['customParams']['Timezone']
+        time.sleep(2)
+
+        LOGGER.debug('polyConfig[params]: {}'.format(self.polyConfig['customParams']))
+
         if 'Hemisphere' in self.polyConfig['customData']:
             self.hemisphere = self.polyConfig['customData']['Hemisphere']
 
@@ -302,6 +321,7 @@ class TimeData(polyinterface.Controller):
         # Restore stored loglevel
         if 'Loglevel' in self.polyConfig['customData']:
             self.loglevelsetting = self.polyConfig['customData']['Loglevel']
+            time.sleep(2)
             self.setDriver('GV16', self.loglevelsetting)
             LOGGER.setLevel(self.loglevelsetting)
             LOGGER.info("Loglevel set to: {}".format(self.loglevel[self.loglevelsetting]))
@@ -312,6 +332,7 @@ class TimeData(polyinterface.Controller):
             })
             LOGGER.setLevel(self.loglevelsetting)
             LOGGER.info("Loglevel set to 10 (Debug)")
+            time.sleep(2)
             self.setDriver('GV16', self.loglevelsetting)
 
         # Remove all existing notices
@@ -331,25 +352,6 @@ class TimeData(polyinterface.Controller):
             notices_dict['Timezone'] = 'Please set your location Timezone, e.g. America/Vancouver'
         self.addNotice(notices_dict)
 
-    def set_configuration(self, config):
-        LOGGER.info("Checking existing configuration values")
-
-        if 'Latitude' in config['customParams']:
-            self.latitude = config['customParams']['Latitude']
-        else:
-            self.latitude = self.addCustomParam({'Latitude': 48.5927})
-
-        if 'Longitude' in config['customParams']:
-            self.longitude = config['customParams']['Longitude']
-        else:
-            self.longitude = self.addCustomParam({'Longitude': -123.4218})
-
-        if 'Timezone' in config['customParams']:
-            self.localtz = config['customParams']['Timezone']
-        else:
-            self.localtz = self.addCustomParam({'Timezone': 'America/Vancouver'})
-
-        LOGGER.debug('polyConfig[params]: {}'.format(self.polyConfig['customParams']))
 
     def installSunNode(self):
         LOGGER.debug("Adding Sunrise/Sunset node")
