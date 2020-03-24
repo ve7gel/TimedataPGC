@@ -296,19 +296,21 @@ class TimeData(polyinterface.Controller):
 
         if 'Latitude' not in self.polyConfig['customParams']:
             self.addCustomParam({'Latitude': 48.5927})
+        time.sleep(2)
 
         self.latitude = self.polyConfig['customParams']['Latitude']
-        time.sleep(2)
 
         if 'Longitude' not in self.polyConfig['customParams']:
             self.addCustomParam({'Longitude': -123.4218})
-        self.longitude = self.polyConfig['customParams']['Longitude']
         time.sleep(2)
+
+        self.longitude = self.polyConfig['customParams']['Longitude']
 
         if 'Timezone' not in self.polyConfig['customParams']:
             self.addCustomParam({'Timezone': 'America/Vancouver'})
-        self.localtz = self.polyConfig['customParams']['Timezone']
         time.sleep(2)
+
+        self.localtz = self.polyConfig['customParams']['Timezone']
 
         LOGGER.debug('polyConfig[params]: {}'.format(self.polyConfig['customParams']))
 
@@ -338,20 +340,6 @@ class TimeData(polyinterface.Controller):
         # Remove all existing notices
         LOGGER.info("remove all notices")
         self.removeNoticesAll()
-
-        # Add a notice?
-        notices_dict = {}
-        if self.latitude == '':
-            notices_dict['Latitude'] = 'Please set your location Latitude, e.g. 12.345, negative south'
-            # self.addNotice("Latitude setting is required.")
-        if self.longitude == '':
-            # self.addNotice("Longitude setting is required.")
-            notices_dict['Longitude'] = 'Please set your location Longitude, e.g. -123.456, negative west'
-        if self.localtz == '':
-            # self.addNotice("Local timezone setting is required")
-            notices_dict['Timezone'] = 'Please set your location Timezone, e.g. America/Vancouver'
-        self.addNotice(notices_dict)
-
 
     def installSunNode(self):
         LOGGER.debug("Adding Sunrise/Sunset node")
