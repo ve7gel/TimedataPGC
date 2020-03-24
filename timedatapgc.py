@@ -424,7 +424,7 @@ class SunData(polyinterface.Node):
     def __init__(self, controller, primary, address, name):
         super(SunData, self).__init__(controller, primary, address, name)
 
-    def query(self):
+    def query(self, requestid):
         self.reportDrivers()
 
     drivers = [
