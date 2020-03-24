@@ -337,17 +337,17 @@ class TimeData(polyinterface.Controller):
         if 'Latitude' in config['customParams']:
             self.latitude = config['customParams']['Latitude']
         else:
-            self.latitude = ''
+            self.latitude = self.addCustomParam({'Latitude': 48.5927})
 
         if 'Longitude' in config['customParams']:
             self.longitude = config['customParams']['Longitude']
         else:
-            self.longitude = ''
+            self.longitude = self.addCustomParam({'Longitude': -123.4218})
 
         if 'Timezone' in config['customParams']:
             self.localtz = config['customParams']['Timezone']
         else:
-            self.localtz = ''
+            self.localtz = self.addCustomParam({'Timezone': 'America/Vancouver'})
 
         LOGGER.debug('polyConfig[params]: {}'.format(self.polyConfig['customParams']))
 
