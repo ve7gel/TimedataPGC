@@ -132,7 +132,7 @@ class TimeData(polyinterface.Controller):
 
     def longPoll(self):
         LOGGER.debug("In longPoll, Lat: {}, Lon: {}".format(self.latitude, self.longitude))
-        if self.latitude == '' or self.longitude == '':
+        if self.latitude == '' or self.longitude == '' or self.localtz == '':
             return
 
         self.displaySunriseSunsetData_today()
