@@ -35,13 +35,18 @@ logs/debug.log
 You can use LOGGER.info, LOGGER.warning, LOGGER.debug, LOGGER.error levels as needed.
 """
 
-def season(date, hemisphere):
+def season(date, hemisphere, isleapyear):
     """
         date is a datetime object
         hemisphere is either 'north' or 'south', dependent on long/lat.
         https://stackoverflow.com/questions/16139306/determine-season-given-timestamp-in-python-using-datetime
     """
-    md = date.month * 100 + date.day
+    if isleapyear:
+        dd = date.day + 1
+    else:
+        dd = date.day
+
+    md = date.month * 100 + dd
     LOGGER.debug("md: {}".format(md))
     if (md > 320) and (md < 621):
         s = 0  # spring
@@ -174,8 +179,6 @@ class TimeData(polyinterface.Controller):
         minutesinyear = minutesinyear + int(timestruct.tm_hour) * 60 + int(timestruct.tm_min)
         self.setDriver('GV9', str(minutesinyear))
 
-        localseason = season(datetime.now(), self.hemisphere)
-        self.setDriver('GV10', localseason)
         # GV11
         # leapyear = leapYear(str(year) + '-' + str(month) + '-' + str(day))
         if calendar.isleap(int(timestruct.tm_year)):
@@ -184,6 +187,10 @@ class TimeData(polyinterface.Controller):
             leapyear = 0
 
         self.setDriver('GV11', leapyear)
+
+        localseason = season(datetime.now(), self.hemisphere, leapyear)
+        self.setDriver('GV10', localseason)
+
         # GV12
         self.utcdiff = datetime.now(pytz.timezone(self.localtz))
         utcoffset = self.utcdiff.utcoffset().total_seconds() / 3600
