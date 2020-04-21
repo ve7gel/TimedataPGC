@@ -1,5 +1,5 @@
 
-# Timedata NodeServer Configuration
+# TimedataPGC NodeServer Configuration
 - longPoll
     - used to periodically update sunrise/sunset tables, default 1 hour
 
@@ -14,6 +14,6 @@
  - Enter longitude in the form 123.4567, negative is west
 
 'Timezone'
- - Enter time zone in the form 'America/Vancouver'
+ - Enter time zone in the form 'America/Vancouver'. Note that this parameter is required in the PGC version of this NS, as PGC operates in UTC time.
  
  Note that parameters are currently case sensitive.
