@@ -9,13 +9,13 @@
     "shortPoll": "30",
     "longPoll": "3600",
     "testMode": false,
-    "profile_version": "2.1.1",
+    "profile_version": "2.1.2",
     "credits": [
         {
             "title": "ISY TimedataPGC: a Time Information server for the ISY 994",
             "author": "Gordon Larsen",
-            "version": "1.0.1",
-            "date": "April 21, 2020",
+            "version": "1.0.2",
+            "date": "December 5, 2020",
             "source": "https://github.com/ve7gel/TimedataPGC",
             "license": "https://github.com/ve7gel/TimedataPGC/blob/master/LICENSE"
         }

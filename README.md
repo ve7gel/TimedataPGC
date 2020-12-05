@@ -13,5 +13,8 @@ Please post any issues encountered on the UDI Forum at "https://forum.universal-
 
 ## Release Notes
 
+- 1.0.1 05/12/2020 
+    - Update to profile 2.1.2, removing EN- from editors for future ISY compatibility
+    
 - 1.0.0 25/03/2020 
     - Initial Polyglot Cloud release.
